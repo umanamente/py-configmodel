@@ -1,10 +1,9 @@
-=========
-Changelog
-=========
+# CHANGELOG
 
-Version 0.1
-===========
 
-- Feature A added
-- FIX: nasty bug #1729 fixed
-- add your changes here!
+
+## v0.1.0 (2024-01-15)
+
+### Feature
+
+* feat: First version ([`9a11678`](https://github.com/umanamente/py-configmodel/commit/9a11678a2420a17dd4215210b40acc69e11b39e5))
