@@ -28,7 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install setuptools wheel build # Add other dependencies if needed
 
-    - name: Build package
+    - name: Build package before release
       run: python -m build
 
     - name: Python Semantic Release
@@ -36,6 +36,9 @@ jobs:
       uses: python-semantic-release/python-semantic-release@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Rebuild package after version bump
+      run: python -m build
 
     - name: Publish package to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
