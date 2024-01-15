@@ -1,0 +1,52 @@
+name: Semantic Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    concurrency: release
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel build # Add other dependencies if needed
+
+    - name: Build package
+      run: python -m build
+
+    - name: Python Semantic Release
+      id: release
+      uses: python-semantic-release/python-semantic-release@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      if: ${{ steps.release.outputs.released }} == 'true'
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_TOKEN }}
+
+    - name: Publish package to GitHub Release
+      uses: python-semantic-release/upload-to-gh-release@main
+      if: ${{ steps.release.outputs.released }} == 'true'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ steps.release.outputs.tag }}
