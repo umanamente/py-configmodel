@@ -2,6 +2,21 @@
 
 
 
+## v0.1.2 (2024-01-16)
+
+### Chore
+
+* chore: Fixed semantic-release condition (don&#39;t attempt to publish to PYPI if version wasn&#39;t changed) ([`dcd5d93`](https://github.com/umanamente/py-configmodel/commit/dcd5d93bd9f5903a7b6d6deefaf81370229a4431))
+
+* chore: Run unit tests with coverage in GH Actions ([`5acc851`](https://github.com/umanamente/py-configmodel/commit/5acc8512bc53ac1d6684665b5847c4ba86c03fcc))
+
+### Fix
+
+* fix: If default values were removed from ini file during execution, write default values again.
+test: Added tests and improved coverage
+docs: Docs theme tweaks ([`05d5de2`](https://github.com/umanamente/py-configmodel/commit/05d5de2b07dce1f342ee07bda924e453477b7458))
+
+
 ## v0.1.1 (2024-01-15)
 
 ### Fix
