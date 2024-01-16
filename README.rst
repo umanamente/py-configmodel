@@ -22,7 +22,7 @@
 .. image:: https://readthedocs.org/projects/py-configmodel/badge/?version=latest
     :target: https://py-configmodel.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://coveralls.io/repos/github/umanamente/py-configmodel/badge.svg?branch=coverage_test
+.. image:: https://coveralls.io/repos/github/umanamente/py-configmodel/badge.svg?branch=master
    :target: https://coveralls.io/github/umanamente/py-configmodel?branch=coverage_test
 
 
