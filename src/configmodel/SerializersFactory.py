@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from typing import List, Type
 
 from configmodel.SerializerIni import SerializerIni
 
 
 class SerializersFactory:
 
-    SUPPORTED_SERIALIZERS: list[list[Type[SerializerIni] | list[str]]] = [
+    SUPPORTED_SERIALIZERS = [
         [SerializerIni, [".ini"]]
     ]
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 
 from configmodel.FieldBase import FieldBase
 from configmodel.Logger import Log
@@ -218,7 +218,7 @@ class ConfigModel(metaclass=MetaConfigModel):
             return None
         return self._fields[field_name]
 
-    def _get_all_fields_recursive(self) -> list[FieldInstance]:
+    def _get_all_fields_recursive(self) -> List[FieldInstance]:
         """
         Get all fields recursively
         """

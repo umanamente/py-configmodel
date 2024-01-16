@@ -154,7 +154,8 @@ todo_emit_warnings = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "alabaster"
+# html_theme = "alabaster"
+html_theme = "classic"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -247,7 +248,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "user_guide.tex", "ConfigModel Documentation", "VM", "manual")
+    ("index", "user_guide.tex", "ConfigModel Documentation", "Vasily Maslyukov", "manual")
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

@@ -1,18 +1,6 @@
 .. These are examples of badges you might want to add to your README:
    please update the URLs accordingly
 
-    .. image:: https://api.cirrus-ci.com/github/<USER>/ConfigModel.svg?branch=main
-        :alt: Built Status
-        :target: https://cirrus-ci.com/github/<USER>/ConfigModel
-    .. image:: https://readthedocs.org/projects/ConfigModel/badge/?version=latest
-        :alt: ReadTheDocs
-        :target: https://ConfigModel.readthedocs.io/en/stable/
-    .. image:: https://img.shields.io/coveralls/github/<USER>/ConfigModel/main.svg
-        :alt: Coveralls
-        :target: https://coveralls.io/r/<USER>/ConfigModel
-    .. image:: https://img.shields.io/pypi/v/ConfigModel.svg
-        :alt: PyPI-Server
-        :target: https://pypi.org/project/ConfigModel/
     .. image:: https://img.shields.io/conda/vn/conda-forge/ConfigModel.svg
         :alt: Conda-Forge
         :target: https://anaconda.org/conda-forge/ConfigModel
@@ -23,9 +11,21 @@
         :alt: Twitter
         :target: https://twitter.com/ConfigModel
 
-.. image:: https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold
-    :alt: Project generated with PyScaffold
-    :target: https://pyscaffold.org/
+      .. image:: https://img.shields.io/coveralls/github/umanamente/ConfigModel/main.svg
+        :alt: Coveralls
+        :target: https://coveralls.io/r/umanamente/ConfigModel
+
+
+.. image:: https://img.shields.io/pypi/v/ConfigModel.svg
+    :alt: PyPI-Server
+    :target: https://pypi.org/project/ConfigModel/
+
+.. image:: https://readthedocs.org/projects/py-configmodel/badge/?version=latest
+    :target: https://py-configmodel.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://coveralls.io/repos/github/umanamente/py-configmodel/badge.svg?branch=coverage_test
+   :target: https://coveralls.io/github/umanamente/py-configmodel?branch=coverage_test
 
 
 ===========
@@ -129,4 +129,15 @@ Note that
 #. You can specify config file name with ``@config_file`` decorator.
 #. Section names (``[account_password]``) of nested classes are automatically generated from class names, if no instances of this class are created.
 #. You can reuse nested classes (``GoogleApi``) in different places of your config.
+
+
+
+Installation
+============
+
+You can install **ConfigModel** using ``pip``:
+
+.. code-block:: bash
+
+    pip install ConfigModel
 
