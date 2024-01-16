@@ -226,15 +226,7 @@ class ConfigModel(metaclass=MetaConfigModel):
             return []
         all_fields = []
         for field_name, field in self._fields.items():
-            if isinstance(field.definition, type) and issubclass(field.definition, ConfigModel):
-                # todo: is this code reachable (there should be no nested class definitions)
-                nested_instance = field.definition._get_instance()
-                if nested_instance is None:
-                    continue
-                nested_fields = nested_instance._get_all_fields_recursive()
-                if nested_fields is not None:
-                    all_fields += nested_fields
-            elif isinstance(field.definition, ConfigModel):
+            if isinstance(field.definition, ConfigModel):
                 nested_fields = field.definition._get_all_fields_recursive()
                 if nested_fields is not None:
                     all_fields += nested_fields

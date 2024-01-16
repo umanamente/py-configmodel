@@ -30,10 +30,9 @@ class MixinCachedValues:
         Set all cached values to not dirty
         """
         self._is_dirty = False
-        if self._cached_values is None:
-            return
-        for cached_value in self._cached_values.values():
-            cached_value.is_dirty = False
+        if self._cached_values:
+            for cached_value in self._cached_values.values():
+                cached_value.is_dirty = False
 
     def get_cached_value(self, path):
         """
@@ -47,19 +46,20 @@ class MixinCachedValues:
             return None
         return cached_value.value
 
-    def set_cached_value(self, path, value):
+    def set_cached_value(self, path, value, is_dirty=True):
         """
         Set cached value
         """
-        self._is_dirty = True
+        if is_dirty:
+            self._is_dirty = True
         if self._cached_values is None:
             self._cached_values = {}
         full_name = self._path_to_str(path)
         if full_name not in self._cached_values:
-            self._cached_values[full_name] = self.CachedValue(path, value, True)
+            self._cached_values[full_name] = self.CachedValue(path, value, is_dirty)
         else:
             self._cached_values[full_name].value = value
-            self._cached_values[full_name].is_dirty = True
+            self._cached_values[full_name].is_dirty = is_dirty
 
     def assign_cached_values(self, cached_values):
         """

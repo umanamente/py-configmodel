@@ -16,13 +16,11 @@
         :target: https://coveralls.io/r/umanamente/ConfigModel
 
 
-.. image:: https://img.shields.io/pypi/v/ConfigModel.svg
-    :alt: PyPI-Server
+.. image:: https://img.shields.io/pypi/v/ConfigModel?color=%234dd47d
     :target: https://pypi.org/project/ConfigModel/
 
 .. image:: https://readthedocs.org/projects/py-configmodel/badge/?version=latest
     :target: https://py-configmodel.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
 
 .. image:: https://coveralls.io/repos/github/umanamente/py-configmodel/badge.svg?branch=coverage_test
    :target: https://coveralls.io/github/umanamente/py-configmodel?branch=coverage_test
