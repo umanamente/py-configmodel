@@ -93,7 +93,7 @@ class ConfigModel(metaclass=MetaConfigModel):
         if self._get_instance() is not None:
             class_name = self.__class__.__name__
             raise Exception(f"{class_name} is already registered using class decorator. "
-                            f"Creating instances is not allowed. Use static attributes instead.")
+                            f"Creating instances is not allowed. Remove decorator to create instances of {class_name}.")
         self._serializer = None
         self._fields = None
         self._field_instance = None
@@ -272,16 +272,16 @@ class ConfigModel(metaclass=MetaConfigModel):
                         user_created_instance_field_name = chk_attr_name
                         break
                 # it is not allowed to use both decorator and nested instance
-                if decorated_field_name is not None and user_created_instance is not None:
-                    raise Exception(
-                        "{parent_class_name} has both '@nested_field' decorator and nested instance of {nested_class_name} (named '{field_name}'). "
-                        "Either remove decorator or '{field_name}' definition".format(
-                            parent_class_name=self.__name__,
-                            nested_class_name=nested_class_definition.__name__,
-                            field_name=user_created_instance_field_name
-                        )
+                # (checked in constructor, so using assert here)
+                assert decorated_field_name is None or user_created_instance is None, \
+                    "{parent_class_name} has both '@nested_field' decorator and nested instance of {nested_class_name} (named '{field_name}'). " \
+                    "Either remove decorator or '{field_name}' definition".format(
+                        parent_class_name=self.__name__,
+                        nested_class_name=nested_class_definition.__name__,
+                        field_name=user_created_instance_field_name
                     )
-                elif decorated_field_name is not None:
+
+                if decorated_field_name is not None:
                     # use the field name from the decorator
                     new_field_instance.name = decorated_field_name
                     # update field definition in class instance, because parent class was not set in decorator

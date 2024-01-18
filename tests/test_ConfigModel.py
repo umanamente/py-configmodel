@@ -210,6 +210,22 @@ class TestConfigModel(unittest.TestCase):
             StaticConfig.MultilevelConfig.RenamedConfig.green_parameter = "new green value"
             mock_set_value.assert_called_with(["multilevel_config", "green_config", "green_parameter"], "new green value")
 
+    def test_unsupported_fields(self):
+        """
+        Check that unsupported fields are not allowed
+        """
+        with self.assertRaises(Exception):
+            # this should fail
+            @config_file(TEST_CONFIG_FILE)
+            class UnsupportedDict(ConfigModel):
+                unsupported_field = {"key1": "value1", "key2": "value2"}
+
+        with self.assertRaises(Exception):
+            # this should fail
+            @config_file(TEST_CONFIG_FILE)
+            class UnsupportedList(ConfigModel):
+                unsupported_field = ["value1", "value2"]
+
 
 if __name__ == '__main__':
     unittest.main()
