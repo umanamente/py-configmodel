@@ -49,7 +49,6 @@ class MetaConfigModel(type):
     pass
 
     def __getattribute__(cls, name):
-        Log.debug(f"Getting CLASS STATIC attribute: {name}")
         if name.startswith("_"):
             return super().__getattribute__(name)
         # check if class is registered as static config
@@ -63,7 +62,6 @@ class MetaConfigModel(type):
         return instance.__getattribute__(name)
 
     def __setattr__(cls, name, value):
-        Log.debug(f"Setting CLASS STATIC attribute: {name}")
         if name.startswith("_"):
             super().__setattr__(name, value)
             return
@@ -103,7 +101,6 @@ class ConfigModel(metaclass=MetaConfigModel):
             self._initialize_config(filename)
 
     def __getattribute__(self, name):
-        Log.debug(f"Getting INSTANCE attribute: {name}")
         if name.startswith("_"):
             return super().__getattribute__(name)
         fields = self._fields
@@ -117,10 +114,11 @@ class ConfigModel(metaclass=MetaConfigModel):
             if isinstance(field.definition, ConfigModel):
                 # this is a nested class instance
                 return field.definition
-            elif isinstance(field.definition, FieldBase):
-                # this is a field definition
-                # must return the value
-                return field.get_value()
+
+            assert isinstance(field.definition, FieldBase), "Unknown type of field definition. This is a bug in ConfigModel library, please report it."
+            # this is a field definition
+            # must return the value
+            return field.get_value()
         return super().__getattribute__(name)
 
     def __setattr__(self, name, value):
@@ -139,11 +137,12 @@ class ConfigModel(metaclass=MetaConfigModel):
             if isinstance(field.definition, ConfigModel):
                 # this is a nested class instance
                 raise Exception("Nested class instances are read-only")
-            elif isinstance(field.definition, FieldBase):
-                # this is a field definition
-                # must set the value
-                field.set_value(value)
-                return
+
+            assert isinstance(field.definition, FieldBase), "Unknown type of field definition. This is a bug in ConfigModel library, please report it."
+            # this is a field definition
+            # must set the value
+            field.set_value(value)
+            return
         super().__setattr__(name, value)
 
     def _initialize_config(self, filename):
@@ -210,9 +209,10 @@ class ConfigModel(metaclass=MetaConfigModel):
         for field_name, field in self._fields.items():
             if isinstance(field.definition, ConfigModel):
                 nested_fields = field.definition._get_all_fields_recursive()
-                if nested_fields is not None:
-                    all_fields += nested_fields
-            elif isinstance(field.definition, FieldBase):
+                assert nested_fields is not None, "Nested fields are None. This is a bug in ConfigModel library, please report it."
+                all_fields += nested_fields
+            else:
+                assert isinstance(field.definition, FieldBase), "Unknown type of field definition. This is a bug in ConfigModel library, please report it."
                 all_fields.append(field)
         return all_fields
 
@@ -220,18 +220,16 @@ class ConfigModel(metaclass=MetaConfigModel):
         """
         Initialize fields
         """
-        if self._fields is None:
-            self._fields = {}
-        assert self._fields is not None
+        assert self._fields is None, "Attempt to initialize fields twice. This is a bug in ConfigModel library, please report it."
+        self._fields = {}
+
         # set this field instance
         self._field_instance = this_field
         # get all static fields from class
         for attr_name, attr in self.__iter_class_attributes():
             # Log.debug(f"attr_name: {attr_name}")
 
-            # check if this field was already initialized (e.g. nested class)
-            if attr_name in self._fields:
-                continue
+            assert attr_name not in self._fields, "Field name is already initialized. This is a bug in ConfigModel library, please report it."
 
             new_field_instance = FieldInstance()
             new_field_instance.parent_field = this_field
@@ -242,7 +240,8 @@ class ConfigModel(metaclass=MetaConfigModel):
             if isinstance(attr, FieldBase):
                 # just use the field definition
                 # create a copy of the field definition, because the one in the class is static
-                self._fields[attr.name] = copy.deepcopy(attr)
+                new_field_instance.definition = copy.deepcopy(attr)
+                new_field_instance.name = attr.name
             elif isinstance(attr, type) and issubclass(attr, ConfigModel):
                 # this is a nested class definition (not an instance)
                 nested_class_definition = attr
@@ -297,17 +296,17 @@ class ConfigModel(metaclass=MetaConfigModel):
                 new_field_instance.definition = nested_config_instance
                 # initialize nested class fields
                 nested_config_instance._initialize_fields(new_field_instance)
-            elif isinstance(attr, dict):
-                # currently not supported
-                raise Exception("Dictionary is not supported as a field definition")
-                pass
-            elif isinstance(attr, list):
-                # currently not supported
-                raise Exception("List is not supported as a field definition")
-                pass
             elif isinstance(attr, (str, int, float, bool)):
                 # create a field definition
                 new_field_instance.definition = FieldBase(name=attr_name, default_value=attr)
+            else:
+                # currently not supported
+                raise Exception("Unsupported type of field definition in class {class_name}. Field '{field_name}' has unsupported type: {field_type}".format(
+                    class_name=self.__class__.__name__,
+                    field_name=attr_name,
+                    field_type=type(attr)
+                ))
+                pass
             # finished deducing field definition
             # check if field definition was set
             assert new_field_instance.definition is not None, "Field definition is not set. This is a bug in ConfigModel library, please report it."

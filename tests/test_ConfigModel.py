@@ -6,6 +6,7 @@ __license__ = "MIT"
 from unittest.mock import patch
 
 from configmodel import ConfigModel, config_file, nested_field
+from configmodel.FieldBase import FieldBase
 from configmodel.Logger import Log
 from mock_Serializer import mock_return_path_as_value, MockSerializer
 
@@ -244,6 +245,12 @@ class TestConfigModel(unittest.TestCase):
             class UnsupportedList(ConfigModel):
                 unsupported_field = ["value1", "value2"]
 
+        with self.assertRaises(Exception):
+            # this should fail
+            @config_file(TEST_CONFIG_FILE)
+            class UnsupportedSet(ConfigModel):
+                unsupported_field = {"value1", "value2"}
+
     def test_uninitialized_fields(self):
         """
         Check that accessing uninitialized fields doesn't raise an exception
@@ -311,6 +318,24 @@ class TestConfigModel(unittest.TestCase):
 
         with self.assertRaises(Exception):
             UndefinedConfig.NestedConfig = "new value"
+
+    def test_fields_base(self):
+        """
+        Check that fields are initialized correctly
+        """
+        @config_file(TEST_CONFIG_FILE)
+        class RootConfig(ConfigModel):
+            generic_value = FieldBase("renamed_generic_value", "111")
+
+            class NestedConfig(ConfigModel):
+                nested_value = FieldBase("renamed_nested_value", "222")
+
+        # check that serializer receives correct paths
+        with patch.object(MockSerializer, "get_value", side_effect=mock_return_path_as_value) as mock_get_value:
+            val = RootConfig.generic_value
+            mock_get_value.assert_called_with(["renamed_generic_value"])
+            val = RootConfig.NestedConfig.nested_value
+            mock_get_value.assert_called_with(["nested_config", "renamed_nested_value"])
 
 
 if __name__ == '__main__':
