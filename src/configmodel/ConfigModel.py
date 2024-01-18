@@ -73,9 +73,6 @@ class MetaConfigModel(type):
             # class is not registered as static config
             super().__setattr__(name, value)
             return
-        if not isinstance(instance, ConfigModel):
-            super().__setattr__(name, value)
-            return
         # noinspection PyProtectedMember
         if instance._fields is None or name not in instance._fields:
             super().__setattr__(name, value)
@@ -203,21 +200,12 @@ class ConfigModel(metaclass=MetaConfigModel):
                 continue
             yield attr_name, getattr(cls, attr_name)
 
-    def _get_field(self, field_name) -> Union[FieldInstance, None]:
-        """
-        Get field by name
-        """
-        if self._fields is None:
-            Log.debug("Fields are not initialized")
-            return None
-        return self._fields[field_name]
-
     def _get_all_fields_recursive(self) -> List[FieldInstance]:
         """
         Get all fields recursively
         """
-        if self._fields is None:
-            return []
+        assert self._fields is not None, "Fields are not initialized. This is a bug in ConfigModel library, please report it."
+
         all_fields = []
         for field_name, field in self._fields.items():
             if isinstance(field.definition, ConfigModel):
@@ -324,7 +312,7 @@ class ConfigModel(metaclass=MetaConfigModel):
             # check if field definition was set
             assert new_field_instance.definition is not None, "Field definition is not set. This is a bug in ConfigModel library, please report it."
             # add field to the list
-            self._fields[new_field_instance.name] = new_field_instance
+            self._fields[attr_name] = new_field_instance
         serializer = self._serializer
         if serializer is not None:
             default_values = []

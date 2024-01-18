@@ -210,6 +210,24 @@ class TestConfigModel(unittest.TestCase):
             StaticConfig.MultilevelConfig.RenamedConfig.green_parameter = "new green value"
             mock_set_value.assert_called_with(["multilevel_config", "green_config", "green_parameter"], "new green value")
 
+    def test_nested_classes_are_added_to_fields(self):
+        """
+        Check that nested classes are added to fields
+        """
+        @config_file(TEST_CONFIG_FILE)
+        class StaticConfig(ConfigModel):
+            string_value = "1234567890"
+
+            class NestedConfig(ConfigModel):
+                parameter1 = "default value"
+
+        # an instance of StaticConfig should be created because it's decorated
+        root_instance = StaticConfig._get_instance()
+        self.assertIsNotNone(root_instance)
+
+        root_fields = root_instance._fields
+        self.assertIn("NestedConfig", root_fields)
+
     def test_unsupported_fields(self):
         """
         Check that unsupported fields are not allowed
@@ -225,6 +243,74 @@ class TestConfigModel(unittest.TestCase):
             @config_file(TEST_CONFIG_FILE)
             class UnsupportedList(ConfigModel):
                 unsupported_field = ["value1", "value2"]
+
+    def test_uninitialized_fields(self):
+        """
+        Check that accessing uninitialized fields doesn't raise an exception
+        """
+        class UninitializedConfig(ConfigModel):
+            parameter1 = "1234"
+
+            class NestedConfig(ConfigModel):
+                parameter2 = "5678"
+
+        # ConfigModel is not initialized yet
+        # assign to uninitialized fields
+        UninitializedConfig.parameter1 = "7777"
+        UninitializedConfig.NestedConfig.parameter2 = "8888"
+
+    def test_access_undefined_properties_1(self):
+        """
+        Check that accessing undefined properties doesn't raise an exception
+        """
+        @config_file(TEST_CONFIG_FILE)
+        class UndefinedConfig(ConfigModel):
+            parameter1 = "1234"
+
+            class NestedConfig(ConfigModel):
+                parameter2 = "5678"
+
+        UndefinedConfig.NestedConfig.undefined_property = "new value"
+
+    def test_access_undefined_properties_2(self):
+        """
+        Check that accessing undefined properties doesn't raise an exception
+        """
+        # config is not initialized yet
+        class UndefinedConfig(ConfigModel):
+            parameter1 = "1234"
+
+            @nested_field("nested_instance")
+            class NestedConfig(ConfigModel):
+                parameter2 = "5678"
+
+        UndefinedConfig.NestedConfig.undefined_property = "new value"
+
+    def test_filename_not_specified(self):
+        """
+        Check that exception is raised if config file is not specified
+        """
+        class UndefinedConfig(ConfigModel):
+            parameter1 = "1234"
+
+        instance = UndefinedConfig()
+        instance.parameter1 = "new value"
+        val = instance.parameter1
+        self.assertEqual("new value", val)
+
+    def test_assign_to_nested_class(self):
+        """
+        Check that assigning to nested class raises an exception
+        """
+        @config_file(TEST_CONFIG_FILE)
+        class UndefinedConfig(ConfigModel):
+            parameter1 = "1234"
+
+            class NestedConfig(ConfigModel):
+                parameter2 = "5678"
+
+        with self.assertRaises(Exception):
+            UndefinedConfig.NestedConfig = "new value"
 
 
 if __name__ == '__main__':
