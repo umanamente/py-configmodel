@@ -21,17 +21,13 @@ class FieldInstance:
         self.definition = None
 
     def get_value(self):
-        if self.serializer is None:
-            raise Exception("Serializer is not set")
-        if self.name is None:
-            raise Exception("Field name is not set")
+        assert self.serializer is not None, "Serializer is not set. This is a bug in ConfigModel library, please report it."
+        assert self.name is not None, "Field name is not set. This is a bug in ConfigModel library, please report it."
         return self.serializer.get_value(self.get_path())
 
     def set_value(self, value):
-        if self.serializer is None:
-            raise Exception("Serializer is not set")
-        if self.name is None:
-            raise Exception("Field name is not set")
+        assert self.serializer is not None, "Serializer is not set. This is a bug in ConfigModel library, please report it."
+        assert self.name is not None, "Field name is not set. This is a bug in ConfigModel library, please report it."
         self.serializer.set_value(self.get_path(), value)
 
     def get_path(self):
@@ -60,8 +56,6 @@ class MetaConfigModel(type):
         instance = cls._get_instance()
         if instance is None:
             # class is not registered as static config
-            return super().__getattribute__(name)
-        if not isinstance(instance, ConfigModel):
             return super().__getattribute__(name)
         # noinspection PyProtectedMember
         if instance._fields is None or name not in instance._fields:
@@ -328,8 +322,7 @@ class ConfigModel(metaclass=MetaConfigModel):
                 new_field_instance.definition = FieldBase(name=attr_name, default_value=attr)
             # finished deducing field definition
             # check if field definition was set
-            if new_field_instance.definition is None:
-                raise Exception("Field definition is not set")
+            assert new_field_instance.definition is not None, "Field definition is not set. This is a bug in ConfigModel library, please report it."
             # add field to the list
             self._fields[new_field_instance.name] = new_field_instance
         serializer = self._serializer
