@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from configmodel.Logger import Log
+
 from configmodel import ConfigModel
 
 
@@ -6,7 +8,7 @@ def config_file(filename):
     """
     Decorator for ConfigModel classes to set the config file
     """
-    print("config_file decorator called, filename: %s" % filename)
+    Log.debug("config_file decorator called, filename: %s" % filename)
 
     def decorator(cls):
         """

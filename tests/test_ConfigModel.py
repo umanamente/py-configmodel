@@ -159,6 +159,36 @@ class TestConfigModel(unittest.TestCase):
             val = StaticConfig.NestedConfig.parameter1
             mock_get_value.assert_called_with(["magenta_config", "parameter1"])
 
+    def test_initialize_fields_empty_values(self):
+        """
+        Check that fields are initialized correctly when default values are not specified
+        """
+        # define config
+        @config_file(TEST_CONFIG_FILE)
+        class StaticConfig(ConfigModel):
+            product_key: str
+
+            @nested_field("purple_config")
+            class NestedConfig(ConfigModel):
+                parameter1: str
+                parameter2: int
+                parameter3: str = "default value"
+
+        # an instance of StaticConfig should be created because it's decorated
+        root_instance = StaticConfig._get_instance()
+        self.assertIsNotNone(root_instance)
+
+        all_fields = root_instance._get_all_fields_recursive()
+        self.assertEqual(4, len(all_fields))
+
+        # check paths
+        with patch.object(MockSerializer, "get_value", side_effect=mock_return_path_as_value) as mock_get_value:
+            # accessing field using static class, but serializer should receive @nested_field path
+            val = StaticConfig.NestedConfig.parameter1
+            mock_get_value.assert_called_with(["purple_config", "parameter1"])
+            val = StaticConfig.NestedConfig.parameter2
+            mock_get_value.assert_called_with(["purple_config", "parameter2"])
+
     def test_paths(self):
         """
         Test complex config with multiple levels of nesting

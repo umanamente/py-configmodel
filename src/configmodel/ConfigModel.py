@@ -193,11 +193,34 @@ class ConfigModel(metaclass=MetaConfigModel):
     def __iter_class_attributes(cls):
         """
         Iterate through all class attributes
+
+        :return: generator of (attr_name, default_value, annotated_type)
+        :rtype: Generator[Tuple[str, Any, Any]]
         """
-        for attr_name in cls.__dict__:
+        # set to store already returned fields
+        returned_fields = set()
+
+        # iterate through annotations
+        if hasattr(cls, "__annotations__") and cls.__annotations__:
+            for attr_name, annotated_type in cls.__annotations__.items():
+                default_value = getattr(cls, attr_name, None)
+
+                assert attr_name not in returned_fields, "Field name is already initialized. This is a bug in ConfigModel library, please report it."
+
+                returned_fields.add(attr_name)
+                yield attr_name, default_value, annotated_type
+        # iterate through all attributes
+        for attr_name in dir(cls):
             if attr_name.startswith("_"):
                 continue
-            yield attr_name, getattr(cls, attr_name)
+            if attr_name in returned_fields:
+                continue
+            default_value = getattr(cls, attr_name, None)
+            # annotated_type = None
+            # if hasattr(cls, "__annotations__"):
+            #     annotated_type = cls.__annotations__.get(attr_name, None)
+            returned_fields.add(attr_name)
+            yield attr_name, default_value, None
 
     def _get_all_fields_recursive(self) -> List[FieldInstance]:
         """
@@ -226,7 +249,7 @@ class ConfigModel(metaclass=MetaConfigModel):
         # set this field instance
         self._field_instance = this_field
         # get all static fields from class
-        for attr_name, attr in self.__iter_class_attributes():
+        for attr_name, default_value, annotated_type in self.__iter_class_attributes():
             # Log.debug(f"attr_name: {attr_name}")
 
             assert attr_name not in self._fields, "Field name is already initialized. This is a bug in ConfigModel library, please report it."
@@ -237,14 +260,14 @@ class ConfigModel(metaclass=MetaConfigModel):
             new_field_instance.serializer = this_field.serializer
 
             # deduce field definition
-            if isinstance(attr, FieldBase):
+            if isinstance(default_value, FieldBase):
                 # just use the field definition
                 # create a copy of the field definition, because the one in the class is static
-                new_field_instance.definition = copy.deepcopy(attr)
-                new_field_instance.name = attr.name
-            elif isinstance(attr, type) and issubclass(attr, ConfigModel):
+                new_field_instance.definition = copy.deepcopy(default_value)
+                new_field_instance.name = default_value.name
+            elif isinstance(default_value, type) and issubclass(default_value, ConfigModel):
                 # this is a nested class definition (not an instance)
-                nested_class_definition = attr
+                nested_class_definition = default_value
                 # first, check if it has decorator to define the field name
                 decorated_field_name = None
                 decorated_instance = nested_class_definition._get_instance()
@@ -253,9 +276,9 @@ class ConfigModel(metaclass=MetaConfigModel):
                 # second, check if an instance of this class was created by user (not allowed if a decorator was used)
                 user_created_instance = None
                 user_created_instance_field_name = None
-                for chk_attr_name, chk_attr in self.__iter_class_attributes():
-                    if isinstance(chk_attr, nested_class_definition):
-                        user_created_instance = chk_attr
+                for chk_attr_name, chk_attr_default_value, _ in self.__iter_class_attributes():
+                    if isinstance(chk_attr_default_value, nested_class_definition):
+                        user_created_instance = chk_attr_default_value
                         user_created_instance_field_name = chk_attr_name
                         break
                 # it is not allowed to use both decorator and nested instance
@@ -288,23 +311,26 @@ class ConfigModel(metaclass=MetaConfigModel):
                 new_field_instance.definition = decorated_instance
                 # initialize nested class fields
                 decorated_instance._initialize_fields(new_field_instance)
-            elif isinstance(attr, ConfigModel):
+            elif isinstance(default_value, ConfigModel):
                 # this is a nested config instance
-                nested_config_static_instance = attr
+                nested_config_static_instance = default_value
                 # create a copy of the nested config instance, because the one in the class is static
                 nested_config_instance = copy.deepcopy(nested_config_static_instance)
                 new_field_instance.definition = nested_config_instance
                 # initialize nested class fields
                 nested_config_instance._initialize_fields(new_field_instance)
-            elif isinstance(attr, (str, int, float, bool)):
+            elif isinstance(default_value, (str, int, float, bool)):
                 # create a field definition
-                new_field_instance.definition = FieldBase(name=attr_name, default_value=attr)
+                new_field_instance.definition = FieldBase(name=attr_name, default_value=default_value)
+            elif default_value is None:
+                # default type is string
+                new_field_instance.definition = FieldBase(name=attr_name, default_value="")
             else:
                 # currently not supported
                 raise Exception("Unsupported type of field definition in class {class_name}. Field '{field_name}' has unsupported type: {field_type}".format(
                     class_name=self.__class__.__name__,
                     field_name=attr_name,
-                    field_type=type(attr)
+                    field_type=type(default_value)
                 ))
                 pass
             # finished deducing field definition

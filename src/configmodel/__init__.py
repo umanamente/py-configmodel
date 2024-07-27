@@ -18,3 +18,5 @@ finally:
 # list submodules to be imported when using `from configmodel import *`
 from .ConfigModel import ConfigModel
 from .Decorators import config_file, nested_field
+
+__all__ = ["ConfigModel", "config_file", "nested_field"]
