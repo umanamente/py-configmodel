@@ -11,10 +11,6 @@
         :alt: Twitter
         :target: https://twitter.com/ConfigModel
 
-      .. image:: https://img.shields.io/coveralls/github/umanamente/ConfigModel/main.svg
-        :alt: Coveralls
-        :target: https://coveralls.io/r/umanamente/ConfigModel
-
 
 .. image:: https://img.shields.io/pypi/v/ConfigModel?color=0285f7
     :target: https://pypi.org/project/ConfigModel/
@@ -23,7 +19,7 @@
     :target: https://py-configmodel.readthedocs.io/en/latest/?badge=latest
 
 .. image:: https://coveralls.io/repos/github/umanamente/py-configmodel/badge.svg?branch=master
-   :target: https://coveralls.io/github/umanamente/py-configmodel?branch=master
+    :target: https://coveralls.io/github/umanamente/py-configmodel?branch=master
 
 
 ===========
