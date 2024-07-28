@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.2.1 (2024-07-28)
+
+### Fix
+
+* fix: config_file decorator creates config related to the script directory, not in current directory ([`d16057d`](https://github.com/umanamente/py-configmodel/commit/d16057d1713dfb3003c9a01302ae070e9be38236))
+
 ## v0.2.0 (2024-07-27)
 
 ### Chore
