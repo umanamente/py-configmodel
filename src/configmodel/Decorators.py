@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import inspect
+import os
+
 from configmodel.Logger import Log
 
 from configmodel import ConfigModel
@@ -14,7 +17,16 @@ def config_file(filename):
         """
         :type cls: ConfigModel
         """
-        cls._register_as_static_config(filename=filename)
+        # check if file path is relative
+        if not os.path.isabs(filename):
+            # file must be relative to the same directory as the script using the decorator
+            client_script_path = inspect.getfile(cls)
+            client_script_dir = os.path.dirname(client_script_path)
+            abs_file_path = os.path.join(client_script_dir, filename)
+        else:
+            abs_file_path = filename
+
+        cls._register_as_static_config(filename=abs_file_path)
         return cls
 
     return decorator

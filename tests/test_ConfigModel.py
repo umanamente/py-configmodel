@@ -1,3 +1,4 @@
+import os
 import unittest
 
 __author__ = "Vasily Maslyukov"
@@ -366,6 +367,42 @@ class TestConfigModel(unittest.TestCase):
             mock_get_value.assert_called_with(["renamed_generic_value"])
             val = RootConfig.NestedConfig.nested_value
             mock_get_value.assert_called_with(["nested_config", "renamed_nested_value"])
+
+    def test_decorator_filename_same_directory(self):
+        """
+        Check that @config_file decorator creates a file in the same directory as the script
+        """
+        # change current directory to the temp directory
+        import tempfile
+        temp_dir = tempfile.mkdtemp()
+
+        assert temp_dir is not None
+        assert os.path.isdir(temp_dir)
+
+        current_dir = os.getcwd()
+
+        # add cleanup action
+        def _cleanup_action():
+            # change current directory back to the original directory
+            os.chdir(current_dir)
+            # remove temp directory
+            os.rmdir(temp_dir)
+        self.addCleanup(_cleanup_action)
+
+        # change current directory to the temp directory
+        os.chdir(temp_dir)
+
+        @config_file(TEST_CONFIG_FILE)
+        class StaticConfig(ConfigModel):
+            product_key = "1234"
+            secret = "abcd"
+
+        # check that file was created in the same directory as the script
+        config_filename = StaticConfig._get_instance()._serializer.filename
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        expected_file_path = os.path.join(script_dir, TEST_CONFIG_FILE)
+
+        self.assertEqual(expected_file_path, config_filename, "Config file was not created in the same directory as the script")
 
 
 if __name__ == '__main__':
