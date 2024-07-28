@@ -1,26 +1,22 @@
-.. These are examples of badges you might want to add to your README:
-   please update the URLs accordingly
-
-    .. image:: https://img.shields.io/conda/vn/conda-forge/ConfigModel.svg
-        :alt: Conda-Forge
-        :target: https://anaconda.org/conda-forge/ConfigModel
-    .. image:: https://pepy.tech/badge/ConfigModel/month
-        :alt: Monthly Downloads
-        :target: https://pepy.tech/project/ConfigModel
-    .. image:: https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter
-        :alt: Twitter
-        :target: https://twitter.com/ConfigModel
-
-
 .. image:: https://img.shields.io/pypi/v/ConfigModel?color=0285f7
-    :target: https://pypi.org/project/ConfigModel/
+   :target: https://pypi.org/project/ConfigModel/
+   :alt: PyPI
 
 .. image:: https://readthedocs.org/projects/py-configmodel/badge/?version=latest
-    :target: https://py-configmodel.readthedocs.io/en/latest/?badge=latest
+   :target: https://py-configmodel.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation
 
 .. image:: https://coveralls.io/repos/github/umanamente/py-configmodel/badge.svg?branch=master
-    :target: https://coveralls.io/github/umanamente/py-configmodel?branch=master
+   :target: https://coveralls.io/github/umanamente/py-configmodel?branch=master
+    :alt: Coverall
 
+.. image:: https://api.codeclimate.com/v1/badges/1e4b075c05609361d010/test_coverage
+   :target: https://codeclimate.com/github/umanamente/py-configmodel/test_coverage
+   :alt: Code Climate
+
+.. image:: https://codecov.io/github/umanamente/py-configmodel/graph/badge.svg?token=Z9NU7133FP
+   :target: https://codecov.io/github/umanamente/py-configmodel
+   :alt: CodeCov
 
 ===========
 ConfigModel
